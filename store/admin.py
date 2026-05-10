@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Order, OrderItem, CustomerProfile, PromoCode
+from .models import Category, Product, Order, OrderItem, CustomerProfile, PromoCode, AllowedPincode
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -32,3 +32,9 @@ class PromoCodeAdmin(admin.ModelAdmin):
     list_display = ['code', 'discount_percentage', 'active']
     list_filter = ['active']
     search_fields = ['code']
+
+@admin.register(AllowedPincode)
+class AllowedPincodeAdmin(admin.ModelAdmin):
+    list_display = ['pincode', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['pincode']

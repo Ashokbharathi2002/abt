@@ -66,3 +66,10 @@ class PromoCode(models.Model):
 
     def __str__(self):
         return f"{self.code} ({self.discount_percentage}%)"
+
+class AllowedPincode(models.Model):
+    pincode = models.CharField(max_length=10, unique=True)
+    is_active = models.BooleanField(default=True, help_text="Uncheck to temporarily disable deliveries to this pincode.")
+
+    def __str__(self):
+        return self.pincode

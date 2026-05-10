@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomerProfile
-
-ALLOWED_PINCODES = ['607106', '607101', '607102', '607103'] # Add or remove pincodes here
+from .models import CustomerProfile, AllowedPincode
 
 class CustomerRegistrationForm(UserCreationForm):
     first_name = forms.CharField(label='Name', max_length=100, required=True)
@@ -18,8 +16,9 @@ class CustomerRegistrationForm(UserCreationForm):
 
     def clean_pincode(self):
         pincode = self.cleaned_data.get('pincode')
-        if pincode not in ALLOWED_PINCODES:
-            raise forms.ValidationError(f"Service is currently only available for pincodes: {', '.join(ALLOWED_PINCODES)}")
+        allowed = list(AllowedPincode.objects.filter(is_active=True).values_list('pincode', flat=True))
+        if pincode not in allowed:
+            raise forms.ValidationError(f"Service is currently only available for pincodes: {', '.join(allowed)}")
         return pincode
 
     def save(self, commit=True):
@@ -57,8 +56,9 @@ class ProfileUpdateForm(forms.Form):
 
     def clean_pincode(self):
         pincode = self.cleaned_data.get('pincode')
-        if pincode not in ALLOWED_PINCODES:
-            raise forms.ValidationError(f"Service is currently only available for pincodes: {', '.join(ALLOWED_PINCODES)}")
+        allowed = list(AllowedPincode.objects.filter(is_active=True).values_list('pincode', flat=True))
+        if pincode not in allowed:
+            raise forms.ValidationError(f"Service is currently only available for pincodes: {', '.join(allowed)}")
         return pincode
 
     def save(self):
