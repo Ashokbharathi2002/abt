@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomerProfile
 
+ALLOWED_PINCODES = ['607106', '607101', '607102', '607103'] # Add or remove pincodes here
+
 class CustomerRegistrationForm(UserCreationForm):
     first_name = forms.CharField(label='Name', max_length=100, required=True)
     email = forms.EmailField(required=True)
@@ -16,8 +18,8 @@ class CustomerRegistrationForm(UserCreationForm):
 
     def clean_pincode(self):
         pincode = self.cleaned_data.get('pincode')
-        if pincode != '607106':
-            raise forms.ValidationError("Service is currently only available for pincode 607106.")
+        if pincode not in ALLOWED_PINCODES:
+            raise forms.ValidationError(f"Service is currently only available for pincodes: {', '.join(ALLOWED_PINCODES)}")
         return pincode
 
     def save(self, commit=True):
@@ -55,8 +57,8 @@ class ProfileUpdateForm(forms.Form):
 
     def clean_pincode(self):
         pincode = self.cleaned_data.get('pincode')
-        if pincode != '607106':
-            raise forms.ValidationError("Service is currently only available for pincode 607106.")
+        if pincode not in ALLOWED_PINCODES:
+            raise forms.ValidationError(f"Service is currently only available for pincodes: {', '.join(ALLOWED_PINCODES)}")
         return pincode
 
     def save(self):
