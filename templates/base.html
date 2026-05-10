@@ -72,7 +72,11 @@
                 <ul class="navbar-nav align-items-center gap-3">
                     <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'home' %}">Home</a></li>
                     {% if user.is_authenticated %}
-                        <li class="nav-item text-muted">Hello, {{ user.username }}</li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium d-flex align-items-center gap-2" href="{% url 'profile' %}">
+                                <span>👤</span> Profile
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" class="m-0 p-0">
                                 {% csrf_token %}

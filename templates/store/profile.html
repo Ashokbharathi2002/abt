@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row g-4 mt-2 mb-5">
+    <!-- Left Column: Profile Update Form -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="display-4 mb-3">👤</div>
+                    <h2 class="fw-bold">My Profile</h2>
+                    <p class="text-muted">Update your contact details below.</p>
+                </div>
+                
+                <form method="post" class="django-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Order History -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-transparent shadow-none" style="backdrop-filter: none;">
+            <div class="card-header bg-white border-0 pb-0 pt-4 px-4 px-md-5 text-center text-lg-start">
+                <h3 class="fw-bold mb-0">Order History</h3>
+                <p class="text-muted">A summary of your past purchases.</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 overflow-auto" style="max-height: 800px;">
+                {% if orders %}
+                    <div class="accordion accordion-flush" id="ordersAccordion">
+                        {% for order in orders %}
+                        <div class="accordion-item border-0 mb-3 rounded-4 shadow-sm overflow-hidden bg-white">
+                            <h2 class="accordion-header" id="heading{{ order.id }}">
+                                <button class="accordion-button collapsed py-3 px-4 bg-white text-dark fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ order.id }}" aria-expanded="false" aria-controls="collapse{{ order.id }}">
+                                    <div class="d-flex justify-content-between align-items-center w-100 pe-3">
+                                        <span>Order #{{ order.id }}</span>
+                                        <span class="badge {% if order.status == 'Pending' %}bg-warning text-dark{% elif order.status == 'Shipped' %}bg-info{% else %}bg-success{% endif %} rounded-pill">{{ order.status }}</span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ order.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ order.id }}" data-bs-parent="#ordersAccordion">
+                                <div class="accordion-body px-4 py-4 bg-light">
+                                    <p class="text-muted small mb-3">Placed on {{ order.created_at|date:"F j, Y, g:i a" }}</p>
+                                    
+                                    <ul class="list-group list-group-flush rounded-3 mb-3">
+                                        {% for item in order.items.all %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                            <div>
+                                                <span class="fw-semibold">{{ item.product.name }}</span><br>
+                                                <small class="text-muted">Qty: {{ item.quantity }} x ₹{{ item.price }}</small>
+                                            </div>
+                                            <span class="fw-bold">₹{{ item.price }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="fs-5 text-muted">Total Paid:</span>
+                                        <span class="fs-4 fw-bold text-primary">₹{{ order.total_price }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                        <div class="display-3 mb-3">📦</div>
+                        <h4 class="text-muted">No orders yet</h4>
+                        <p class="text-muted mb-4">You haven't placed any orders.</p>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary rounded-pill px-4">Start Shopping</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

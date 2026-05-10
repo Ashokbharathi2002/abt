@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from .models import Product, Order, OrderItem
 from .services import send_telegram_message
-from .forms import CustomerRegistrationForm
+from .forms import CustomerRegistrationForm, ProfileUpdateForm
 
 def home(request):
     cart = request.session.get('cart', {})
@@ -138,3 +138,21 @@ def register(request):
     else:
         form = CustomerRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+@login_required
+def profile(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect('profile')
+    else:
+        form = ProfileUpdateForm(user=request.user)
+        
+    return render(request, 'store/profile.html', {
+        'form': form,
+        'orders': orders
+    })
