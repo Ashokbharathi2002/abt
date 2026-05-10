@@ -7,7 +7,9 @@ from .services import send_telegram_message
 from .forms import CustomerRegistrationForm
 
 def home(request):
-    products = Product.objects.all()
+    cart = request.session.get('cart', {})
+    cart_product_ids = [int(pid) for pid in cart.keys()]
+    products = Product.objects.exclude(id__in=cart_product_ids)
     return render(request, 'store/home.html', {'products': products})
 
 def product_detail(request, product_id):

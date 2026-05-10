@@ -57,13 +57,20 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-1">
         <div class="container">
             <a href="{% url 'home' %}" class="navbar-brand fw-bold text-primary fs-4">AB Traders</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div class="d-flex align-items-center gap-3 order-lg-last">
+                <a class="nav-link fw-medium d-flex align-items-center position-relative" href="{% url 'view_cart' %}">
+                    <span style="font-size: 1.5rem;">🛒</span>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.75rem;">
+                        {{ request.session.cart|length }}
+                    </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end me-lg-4" id="navbarNav">
                 <ul class="navbar-nav align-items-center gap-3">
                     <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'view_cart' %}">Cart <span class="badge bg-primary rounded-pill">{{ request.session.cart|length }}</span></a></li>
                     {% if user.is_authenticated %}
                         <li class="nav-item text-muted">Hello, {{ user.username }}</li>
                         <li class="nav-item">
