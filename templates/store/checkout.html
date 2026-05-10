@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="fw-bold">Checkout</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <h3 class="fw-bold mb-3">Shipping Information</h3>
+                <p class="text-muted mb-4">For this demo, your account details will be used for shipping.</p>
+                
+                <div class="alert alert-info rounded-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 fs-4">💳</div>
+                        <div>
+                            <strong>Payment Method:</strong> Cash on Delivery (Test Mode)
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" action="{% url 'checkout' %}">
+                    {% csrf_token %}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold">Place Order Now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 rounded-4 bg-light">
+            <div class="card-body p-4">
+                <h4 class="fw-bold mb-4">Order Summary</h4>
+                
+                <div class="d-flex flex-column gap-3 mb-4">
+                    {% for pid, item in cart.items %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-semibold">{{ item.name }}</span> <br>
+                            <small class="text-muted">Qty: {{ item.quantity }}</small>
+                        </div>
+                        <div class="fw-bold">₹{{ item.price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <hr class="text-muted">
+                
+                <div class="d-flex justify-content-between fs-4 fw-bold mt-3">
+                    <span>Total</span>
+                    <span class="text-primary">₹{{ total_price|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="fw-bold">Shopping Cart</h1>
+    </div>
+</div>
+
+{% if cart_items %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-muted">
+                            <tr>
+                                <th class="ps-4">Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th class="pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3 py-2">
+                                        {% if item.image_url %}
+                                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                        {% endif %}
+                                        <span class="fw-semibold">{{ item.name }}</span>
+                                    </div>
+                                </td>
+                                <td>₹{{ item.price|floatformat:2 }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="{% url 'update_cart' item.product_id 'decrease' %}" class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">-</a>
+                                        <span class="fw-semibold px-2">{{ item.quantity }}</span>
+                                        <a href="{% url 'update_cart' item.product_id 'increase' %}" class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">+</a>
+                                    </div>
+                                </td>
+                                <td class="fw-bold">₹{{ item.total|floatformat:2 }}</td>
+                                <td class="pe-4">
+                                    <a href="{% url 'remove_from_cart' item.product_id %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Remove</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+                <h4 class="fw-bold mb-4">Order Summary</h4>
+                <div class="d-flex justify-content-between mb-3 fs-5">
+                    <span class="text-muted">Total</span>
+                    <span class="fw-bold text-primary">₹{{ total_price|floatformat:2 }}</span>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg rounded-pill">Proceed to Checkout</a>
+                    <a href="{% url 'home' %}" class="btn btn-light rounded-pill">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5 bg-white rounded-4 shadow-sm">
+    <div class="mb-4 text-muted" style="font-size: 4rem;">🛒</div>
+    <h2 class="text-muted mb-4">Your cart is empty</h2>
+    <a href="{% url 'home' %}" class="btn btn-primary btn-lg rounded-pill px-5">Start Shopping</a>
+</div>
+{% endif %}
+{% endblock %}
