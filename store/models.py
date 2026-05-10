@@ -16,6 +16,8 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Set this higher than price to show a discount.")
+    is_offer = models.BooleanField(default=False)
     stock = models.PositiveIntegerField(default=0)
     image_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -54,3 +56,12 @@ class CustomerProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class PromoCode(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.PositiveIntegerField(help_text="Percentage discount (e.g., 20 for 20%)")
+    active = models.BooleanField(default=True)
+    applicable_products = models.ManyToManyField(Product, blank=True, related_name='promo_codes', help_text="Select specific products this code applies to. Leave empty to apply to the whole cart.")
+
+    def __str__(self):
+        return f"{self.code} ({self.discount_percentage}%)"

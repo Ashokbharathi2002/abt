@@ -31,10 +31,22 @@
                                         {% if item.image_url %}
                                         <img src="{{ item.image_url }}" alt="{{ item.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                         {% endif %}
-                                        <span class="fw-semibold">{{ item.name }}</span>
+                                        <div>
+                                            <span class="fw-semibold d-block">{{ item.name }}</span>
+                                            {% if item.discounted_price < item.original_price %}
+                                                <span class="badge bg-danger rounded-pill mt-1" style="font-size: 0.65rem;">Promo Applied</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </td>
-                                <td>₹{{ item.price|floatformat:2 }}</td>
+                                <td>
+                                    {% if item.discounted_price < item.original_price %}
+                                        <del class="text-muted small d-block">₹{{ item.original_price|floatformat:2 }}</del>
+                                        <span class="text-danger fw-bold">₹{{ item.discounted_price|floatformat:2 }}</span>
+                                    {% else %}
+                                        ₹{{ item.original_price|floatformat:2 }}
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <a href="{% url 'update_cart' item.product_id 'decrease' %}" class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">-</a>
@@ -58,8 +70,34 @@
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4">
                 <h4 class="fw-bold mb-4">Order Summary</h4>
-                <div class="d-flex justify-content-between mb-3 fs-5">
-                    <span class="text-muted">Total</span>
+                
+                <form action="{% url 'apply_promo' %}" method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="promo_code" class="form-control" placeholder="Promo code" value="{{ promo_code|default:'' }}">
+                        <button class="btn btn-outline-secondary" type="submit">Apply</button>
+                    </div>
+                    {% if promo %}
+                        <small class="text-success d-block mt-2">✓ Promo '{{ promo.code }}' applied (-{{ promo.discount_percentage }}%)</small>
+                    {% endif %}
+                </form>
+
+                <div class="d-flex justify-content-between mb-2 fs-6">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-medium">₹{{ subtotal|floatformat:2 }}</span>
+                </div>
+                
+                {% if total_discount > 0 %}
+                <div class="d-flex justify-content-between mb-3 fs-6 text-danger">
+                    <span>Discount</span>
+                    <span class="fw-bold">-₹{{ total_discount|floatformat:2 }}</span>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="d-flex justify-content-between mb-4 fs-5">
+                    <span class="text-muted fw-bold">Total</span>
                     <span class="fw-bold text-primary">₹{{ total_price|floatformat:2 }}</span>
                 </div>
                 <div class="d-grid gap-2">

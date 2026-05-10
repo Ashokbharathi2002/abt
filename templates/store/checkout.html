@@ -39,20 +39,35 @@
                 <h4 class="fw-bold mb-4">Order Summary</h4>
                 
                 <div class="d-flex flex-column gap-3 mb-4">
-                    {% for pid, item in cart.items %}
+                    {% for item in cart_items %}
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <span class="fw-semibold">{{ item.name }}</span> <br>
                             <small class="text-muted">Qty: {{ item.quantity }}</small>
+                            {% if item.discounted_price < item.original_price %}
+                                <span class="badge bg-danger rounded-pill ms-2" style="font-size: 0.6rem;">Promo</span>
+                            {% endif %}
                         </div>
-                        <div class="fw-bold">₹{{ item.price }}</div>
+                        <div class="fw-bold">
+                            {% if item.discounted_price < item.original_price %}
+                                <del class="text-muted small me-1">₹{{ item.original_price|floatformat:2 }}</del>
+                            {% endif %}
+                            ₹{{ item.discounted_price|floatformat:2 }}
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
                 
                 <hr class="text-muted">
                 
-                <div class="d-flex justify-content-between fs-4 fw-bold mt-3">
+                {% if promo %}
+                <div class="d-flex justify-content-between fs-6 text-danger mb-2">
+                    <span>Discount ({{ promo.code }})</span>
+                    <span class="fw-bold">-₹{{ total_discount|floatformat:2 }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between fs-4 fw-bold mt-2">
                     <span>Total</span>
                     <span class="text-primary">₹{{ total_price|floatformat:2 }}</span>
                 </div>
