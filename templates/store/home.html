@@ -12,9 +12,14 @@
     {% for product in products %}
     <div class="col">
         <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden product-card-hover position-relative">
-            {% if product.is_offer %}
-            <span class="position-absolute top-0 end-0 badge bg-danger m-3 fs-6 rounded-pill z-1 shadow-sm">🔥 SALE</span>
-            {% endif %}
+            <div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2 z-1">
+                {% if product.is_offer %}
+                <span class="badge bg-danger fs-6 rounded-pill shadow-sm">🔥 SALE</span>
+                {% endif %}
+                {% if product.is_clearance %}
+                <span class="badge bg-warning text-dark fs-6 rounded-pill shadow-sm">⚠️ CLEARANCE</span>
+                {% endif %}
+            </div>
             {% if product.image_url %}
             <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
             {% else %}

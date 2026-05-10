@@ -18,6 +18,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Set this higher than price to show a discount.")
     is_offer = models.BooleanField(default=False)
+    is_clearance = models.BooleanField(default=False, help_text="Check to display in the Stock Clearance zone.")
     stock = models.PositiveIntegerField(default=0)
     image_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

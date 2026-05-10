@@ -68,6 +68,10 @@ def offer_zone(request):
     products = Product.objects.filter(is_offer=True)
     return render(request, 'store/offer_zone.html', {'products': products})
 
+def clearance_zone(request):
+    products = Product.objects.filter(is_clearance=True)
+    return render(request, 'store/clearance_zone.html', {'products': products})
+
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'store/product_detail.html', {'product': product})

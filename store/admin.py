@@ -12,9 +12,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'original_price', 'is_offer', 'stock', 'created_at']
-    list_filter = ['is_offer', 'category', 'created_at']
-    list_editable = ['price', 'original_price', 'is_offer', 'stock']
+    list_display = ['name', 'category', 'price', 'original_price', 'is_offer', 'is_clearance', 'stock', 'created_at']
+    list_filter = ['is_offer', 'is_clearance', 'category', 'created_at']
+    list_editable = ['price', 'original_price', 'is_offer', 'is_clearance', 'stock']
     search_fields = ['name', 'description']
 
 @admin.register(Order)
