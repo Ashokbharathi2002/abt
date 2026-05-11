@@ -67,11 +67,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 # Database configuration
-# Parse database connection url strings like psql://user:pass@127.0.0.1:8458/db
+# Parse database connection url strings like mysql://user:pass@127.0.0.1:3306/db
 # This will automatically pick up the DATABASE_URL environment variable from Render
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        default=os.environ.get('DATABASE_URL', 'mysql://avnadmin:YOUR_PASSWORD@mysql-b44d0e7-abt.i.aivencloud.com:22454/defaultdb'),
         conn_max_age=600
     )
 }
