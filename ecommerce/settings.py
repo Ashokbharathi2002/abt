@@ -78,12 +78,20 @@ db_pwd_part3 = "-Pq9PMcN"
 db_pwd = db_pwd_part1 + db_pwd_part2 + db_pwd_part3
 fallback_url = f'mysql://avnadmin:{db_pwd}@mysql-b44d0e7-abt.i.aivencloud.com:22454/defaultdb'
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', fallback_url),
-        conn_max_age=0
-    )
-}
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL', fallback_url),
+            conn_max_age=0
+        )
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
