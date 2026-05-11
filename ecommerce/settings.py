@@ -81,7 +81,7 @@ fallback_url = f'mysql://avnadmin:{db_pwd}@mysql-b44d0e7-abt.i.aivencloud.com:22
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL', fallback_url),
-        conn_max_age=600
+        conn_max_age=0
     )
 }
 
