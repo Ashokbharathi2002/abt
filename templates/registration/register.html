@@ -1,26 +1,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-body p-5">
-                <h2 class="text-center mb-4 fw-bold text-primary">Create an Account</h2>
+<div class="row justify-content-center py-5">
+    <div class="col-md-4">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">AB Traders</h2>
+        </div>
+        
+        <div class="bg-white p-4 border rounded shadow-sm">
+            <h1 class="fs-4 fw-normal mb-3">Create account</h1>
+            
+            <form method="post" class="mb-4">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label small fw-bold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <div class="form-text x-small text-secondary"><i class="bi bi-info-circle"></i> {{ field.help_text }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
                 
-                <form method="post" class="django-form">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">Register</button>
-                    </div>
-                </form>
-                
-                <p class="text-center mt-4 text-muted">
-                    Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Login here</a>
-                </p>
+                <button type="submit" class="btn btn-primary w-100 py-1 rounded-2 shadow-sm">Create account</button>
+            </form>
+            
+            <div class="small mb-4 border-bottom pb-4">
+                By creating an account, you agree to AB Traders' <a href="#" class="text-info">Conditions of Use</a> and <a href="#" class="text-info">Privacy Notice</a>.
+            </div>
+            
+            <div class="small">
+                Already have an account? <a href="{% url 'login' %}" class="text-info text-decoration-none">Sign in ▸</a>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    body { background-color: #ffffff !important; }
+    .navbar, footer { display: none !important; }
+    input { 
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        outline: none;
+    }
+    input:focus { border-color: #e77600; box-shadow: 0 0 3px 2px rgba(228,121,17,0.5); }
+    .x-small { font-size: 0.75rem; }
+</style>
 {% endblock %}

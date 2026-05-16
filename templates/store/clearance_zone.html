@@ -1,62 +1,68 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-5 justify-content-center mt-3">
-    <div class="col-lg-10 text-center bg-warning p-5 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #fbbf24) !important; border: 1px solid rgba(255,255,255,0.4);">
-        <h1 class="display-3 fw-bolder mb-3 text-dark">⚠️ Stock Clearance</h1>
-        <p class="lead text-dark mb-4 fs-4 fw-medium" style="opacity: 0.8;">Everything must go! Final markdowns on our remaining stock. When they're gone, they're gone!</p>
-    </div>
-</div>
-
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    {% for product in products %}
-    <div class="col">
-        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden product-card-hover position-relative border border-warning border-opacity-50">
-            <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-3 fs-6 rounded-pill z-1 shadow-sm px-3 py-2 fw-bold">⚠️ CLEARANCE</span>
+<div class="row g-4">
+    <!-- Sidebar -->
+    <div class="col-lg-2 d-none d-lg-block">
+        <div class="filter-sidebar">
+            <div class="filter-title">Clearance Store</div>
+            <a href="#" class="filter-link fw-bold text-amazon-orange">All Clearance</a>
+            <a href="#" class="filter-link">Under ₹200</a>
+            <a href="#" class="filter-link">₹200 - ₹500</a>
             
-            {% if product.image_url %}
-            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
-            {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted" style="height: 250px;">
-                <span class="fs-4">No Image</span>
-            </div>
-            {% endif %}
-            
-            <div class="card-body d-flex flex-column p-4 bg-warning bg-opacity-10">
-                <h5 class="card-title fw-bold fs-4 mb-2">{{ product.name }}</h5>
-                <h6 class="card-subtitle mb-3 text-dark fw-bold fs-3">
-                    {% if product.original_price %}
-                        <del class="text-muted fs-5 me-2">₹{{ product.original_price }}</del>
-                    {% endif %}
-                    ₹{{ product.price }}
-                </h6>
-                <p class="card-text text-muted flex-grow-1">{{ product.description|truncatewords:15 }}</p>
-                <p class="text-danger fw-bold small mb-3">⚡ Only {{ product.stock|default:"a few" }} left in stock!</p>
-                
-                <div class="d-grid gap-2 mt-auto">
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-warning text-dark border-warning rounded-pill fw-bold">View Details</a>
-                    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-warning rounded-pill fw-bold shadow-sm text-dark">Clear it out!</a>
-                </div>
-            </div>
+            <div class="filter-title mt-4">Condition</div>
+            <a href="#" class="filter-link">New</a>
+            <a href="#" class="filter-link">Renewed</a>
         </div>
     </div>
-    {% empty %}
-    <div class="col-12 text-center py-5">
-        <div class="display-1 mb-3">🧹</div>
-        <p class="fs-3 fw-bold text-muted">All clear!</p>
-        <p class="text-muted mb-4">There are currently no items on clearance.</p>
-        <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-5">Back to Shop</a>
-    </div>
-    {% endfor %}
-</div>
 
-<style>
-    .product-card-hover {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .product-card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 1rem 3rem rgba(245, 158, 11, 0.25)!important;
-    }
-</style>
+    <!-- Main Content -->
+    <div class="col-lg-10">
+        <div class="bg-white p-4 shadow-sm border rounded mb-4" style="background: linear-gradient(to right, #ffffff, #fff5f5) !important;">
+            <h1 class="fs-3 fw-bold mb-1 text-danger">Stock Clearance Outlet</h1>
+            <p class="small text-secondary mb-0">Unbeatable prices on last-chance inventory. Once they're gone, they're gone!</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-3 pb-5">
+            {% for product in products %}
+            <div class="col">
+                <div class="card h-100 p-3">
+                    <div class="text-center mb-3" style="height: 180px;">
+                        {% if product.image_url %}
+                        <img src="{{ product.image_url }}" class="img-fluid h-100" alt="{{ product.name }}" style="object-fit: contain;">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body p-0 d-flex flex-column">
+                        <div class="mb-2">
+                            <span class="badge bg-warning text-dark rounded-1 py-1 px-2" style="font-size: 0.7rem;">Clearance</span>
+                        </div>
+                        
+                        <a href="{% url 'product_detail' product.id %}" class="card-title text-decoration-none hover-orange mb-1">
+                            {{ product.name|truncatechars:60 }}
+                        </a>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex align-items-baseline gap-1">
+                                <span class="fs-5 fw-bold text-danger">₹{{ product.price }}</span>
+                                <span class="small text-secondary text-decoration-line-through">₹{{ product.original_price|default:"999.00" }}</span>
+                            </div>
+                            <div class="small text-secondary">Ends in 2 days</div>
+                        </div>
+
+                        <div class="mt-auto d-grid">
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary py-1 rounded-pill">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-secondary">No clearance items at the moment. Explore our home page for more products!</p>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary mt-2">Go to Home</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

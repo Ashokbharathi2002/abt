@@ -1,61 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-5 justify-content-center mt-3">
-    <div class="col-lg-10 text-center bg-danger text-white p-5 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #ef4444, #f43f5e) !important; border: 1px solid rgba(255,255,255,0.2);">
-        <h1 class="display-3 fw-bolder mb-3 text-white">🎁 Offer Zone</h1>
-        <p class="lead text-white-50 mb-4 fs-4">Grab these amazing deals before they run out! Exclusive discounts on select products.</p>
-    </div>
-</div>
-
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    {% for product in products %}
-    <div class="col">
-        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden product-card-hover position-relative border border-danger border-opacity-25">
-            <span class="position-absolute top-0 end-0 badge bg-danger m-3 fs-6 rounded-pill z-1 shadow-sm px-3 py-2">🔥 LIMITED OFFER</span>
+<div class="row g-4">
+    <!-- Sidebar -->
+    <div class="col-lg-2 d-none d-lg-block">
+        <div class="filter-sidebar">
+            <div class="filter-title">Deals & Promotions</div>
+            <a href="#" class="filter-link fw-bold text-amazon-orange">Today's Deals</a>
+            <a href="#" class="filter-link">Lightning Deals</a>
+            <a href="#" class="filter-link">Upcoming Deals</a>
+            <a href="#" class="filter-link">Coupons</a>
             
-            {% if product.image_url %}
-            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
-            {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted" style="height: 250px;">
-                <span class="fs-4">No Image</span>
-            </div>
-            {% endif %}
-            
-            <div class="card-body d-flex flex-column p-4 bg-danger bg-opacity-10">
-                <h5 class="card-title fw-bold fs-4 mb-2">{{ product.name }}</h5>
-                <h6 class="card-subtitle mb-3 text-danger fw-bold fs-3">
-                    {% if product.original_price %}
-                        <del class="text-muted fs-5 me-2">₹{{ product.original_price }}</del>
-                    {% endif %}
-                    ₹{{ product.price }}
-                </h6>
-                <p class="card-text text-muted flex-grow-1">{{ product.description|truncatewords:15 }}</p>
-                
-                <div class="d-grid gap-2 mt-4">
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-danger rounded-pill fw-bold">View Details</a>
-                    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-danger rounded-pill fw-bold shadow-sm">Grab Deal!</a>
-                </div>
-            </div>
+            <div class="filter-title mt-4">Category</div>
+            <a href="{% url 'home' %}" class="filter-link">All Categories</a>
+            {% for cat in categories %}
+            <a href="{% url 'home' %}?category={{ cat.id }}" class="filter-link">{{ cat.name }}</a>
+            {% endfor %}
         </div>
     </div>
-    {% empty %}
-    <div class="col-12 text-center py-5">
-        <div class="display-1 mb-3">😢</div>
-        <p class="fs-3 fw-bold text-muted">No active offers right now.</p>
-        <p class="text-muted mb-4">Check back later for exciting new deals!</p>
-        <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-5">Back to Shop</a>
-    </div>
-    {% endfor %}
-</div>
 
-<style>
-    .product-card-hover {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .product-card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 1rem 3rem rgba(239, 68, 68, 0.25)!important;
-    }
-</style>
+    <!-- Main Content -->
+    <div class="col-lg-10">
+        <div class="bg-white p-4 shadow-sm border rounded mb-4">
+            <h1 class="fs-3 fw-bold mb-1">Today's Deals</h1>
+            <p class="small text-secondary mb-0">Discover limited-time offers and exclusive discounts updated daily.</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-3 pb-5">
+            {% for product in products %}
+            <div class="col">
+                <div class="card h-100 p-3">
+                    <div class="text-center mb-3" style="height: 180px;">
+                        {% if product.image_url %}
+                        <img src="{{ product.image_url }}" class="img-fluid h-100" alt="{{ product.name }}" style="object-fit: contain;">
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body p-0 d-flex flex-column">
+                        <div class="mb-2">
+                            <span class="badge bg-danger text-white rounded-1 py-1 px-2" style="font-size: 0.7rem;">Top Deal</span>
+                        </div>
+                        
+                        <a href="{% url 'product_detail' product.id %}" class="card-title text-decoration-none hover-orange mb-1">
+                            {{ product.name|truncatechars:60 }}
+                        </a>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex align-items-baseline gap-1">
+                                <span class="fs-5 fw-bold">₹{{ product.price }}</span>
+                                <span class="small text-secondary text-decoration-line-through">₹{{ product.original_price|default:"999.00" }}</span>
+                            </div>
+                            <div class="small text-danger fw-bold">Ended soon - 15% claimed</div>
+                        </div>
+
+                        <div class="mt-auto d-grid">
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary py-1 rounded-pill">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-secondary">No deals available at the moment. Check back later!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import Product, Order, OrderItem, CustomerProfile, PromoCode
+from django.db.models import Q
+from .models import Product, Order, OrderItem, CustomerProfile, PromoCode, Category
 from .services import send_telegram_message
 from .forms import CustomerRegistrationForm, ProfileUpdateForm
 
@@ -59,10 +60,49 @@ def get_cart_details(request):
     }
 
 def home(request):
-    cart = request.session.get('cart', {})
-    cart_product_ids = [int(pid) for pid in cart.keys()]
-    products = Product.objects.exclude(id__in=cart_product_ids)
-    return render(request, 'store/home.html', {'products': products})
+    query = request.GET.get('q', '')
+    category_id = request.GET.get('category')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    sort_by = request.GET.get('sort', '-created_at')
+
+    products = Product.objects.all()
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query)
+        )
+
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    if min_price:
+        try:
+            products = products.filter(price__gte=float(min_price))
+        except ValueError:
+            pass
+
+    if max_price:
+        try:
+            products = products.filter(price__lte=float(max_price))
+        except ValueError:
+            pass
+
+    products = products.order_by(sort_by)
+
+    categories = Category.objects.all()
+    
+    context = {
+        'products': products,
+        'categories': categories,
+        'current_query': query,
+        'current_category': category_id,
+        'current_min_price': min_price,
+        'current_max_price': max_price,
+        'current_sort': sort_by,
+    }
+    return render(request, 'store/home.html', context)
 
 def offer_zone(request):
     products = Product.objects.filter(is_offer=True)
@@ -79,21 +119,26 @@ def product_detail(request, product_id):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart = request.session.get('cart', {})
+    quantity = int(request.GET.get('quantity', 1))
     
     product_id_str = str(product_id)
     if product_id_str in cart:
-        cart[product_id_str]['quantity'] += 1
+        cart[product_id_str]['quantity'] += quantity
     else:
         cart[product_id_str] = {
             'name': product.name,
             'price': str(product.price),
-            'quantity': 1,
+            'quantity': quantity,
             'image_url': product.image_url
         }
     
     request.session['cart'] = cart
     messages.success(request, f"{product.name} added to cart.")
     return redirect('home')
+
+def buy_now(request, product_id):
+    add_to_cart(request, product_id)
+    return redirect('checkout')
 
 def apply_promo(request):
     if request.method == 'POST':

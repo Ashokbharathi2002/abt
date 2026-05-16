@@ -1,39 +1,130 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card shadow-lg border-0 rounded-4 overflow-hidden mt-4">
-    <div class="row g-0">
-        <div class="col-md-6">
+<div class="mb-4">
+    <a href="{% url 'home' %}" class="btn btn-light rounded-pill px-4 py-2 small fw-bold shadow-sm">← Back to Store</a>
+</div>
+<div class="row g-5 bg-white p-5 shadow-sm border-0 rounded-4 fade-in">
+    <!-- Modern Image Showcase -->
+    <div class="col-lg-5 text-center">
+        <div class="position-sticky" style="top: 100px;">
+            <div class="p-4 bg-white rounded-4 mb-3 border-0 shadow-sm overflow-hidden image-zoom-container">
+                {% if product.image_url %}
+                <img src="{{ product.image_url }}" class="img-fluid transition-transform" alt="{{ product.name }}" style="max-height: 500px; object-fit: contain; width: 100%;">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <span class="text-secondary opacity-50 display-1">🖼️</span>
+                </div>
+                {% endif %}
+            </div>
             {% if product.image_url %}
-            <img src="{{ product.image_url }}" class="img-fluid w-100 h-100" alt="{{ product.name }}" style="object-fit: cover; min-height: 400px;">
-            {% else %}
-            <div class="bg-light d-flex align-items-center justify-content-center h-100 text-muted" style="min-height: 400px;">
-                <span class="display-4">No Image</span>
+            <div class="d-flex justify-content-center gap-2">
+                <div class="border-2 border-warning rounded-3 p-1" style="width: 70px; height: 70px; cursor: pointer;">
+                    <img src="{{ product.image_url }}" class="w-100 h-100 rounded-2" style="object-fit: contain;">
+                </div>
             </div>
             {% endif %}
         </div>
-        <div class="col-md-6">
-            <div class="card-body p-5 d-flex flex-column h-100 justify-content-center">
-                <div class="mb-2">
-                    <span class="badge bg-secondary rounded-pill px-3 py-2">{{ product.category.name }}</span>
+    </div>
+
+    <!-- Info Column -->
+    <div class="col-lg-4">
+        <div class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb x-small text-uppercase ls-wide">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-info text-decoration-none">Store</a></li>
+                    <li class="breadcrumb-item active">{{ product.category.name }}</li>
+                </ol>
+            </nav>
+            <h1 class="fs-2 fw-800 mb-2 lh-sm">{{ product.name }}</h1>
+            <a href="#" class="text-info text-decoration-none small fw-bold">Brand: AB Traders Elite</a>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2 mb-4 pb-4 border-bottom">
+            <div class="text-warning fs-5">★★★★★</div>
+            <span class="text-info small fw-bold">4.8 (2,450 Ratings)</span>
+        </div>
+
+        <div class="mb-4">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <span class="badge bg-danger rounded-pill px-3 py-2">Limited Time Deal</span>
+                <span class="text-danger fw-bold fs-5">-25%</span>
+            </div>
+            <div class="product-price fs-1">₹{{ product.price }}</div>
+            <div class="text-secondary small mt-2">
+                List Price: <span class="text-decoration-line-through">₹{{ product.original_price|default:"1299.00" }}</span>
+            </div>
+            <div class="bg-success bg-opacity-10 text-success x-small fw-bold p-2 rounded-3 mt-3 d-inline-block">
+                ✓ Lowest Price in 30 Days
+            </div>
+        </div>
+
+        <div class="mb-4 py-4 border-top border-bottom">
+            <h6 class="fw-800 small text-uppercase mb-3 ls-wide">About this item</h6>
+            <ul class="small ps-3 mb-0 text-secondary lh-lg">
+                <li class="mb-2">{{ product.description }}</li>
+                <li class="mb-2">Crafted with precision for high-performance and style.</li>
+                <li class="mb-2">Advanced technology integrated for a seamless experience.</li>
+                <li>Official AB Traders warranty included for 12 months.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modern Buy Box -->
+    <div class="col-lg-3">
+        <div class="bg-light p-4 rounded-4 border shadow-sm">
+            <div class="fs-2 fw-800 mb-1">₹{{ product.price }}</div>
+            <div class="small mb-4">
+                <span class="text-info fw-bold">FREE delivery</span> 
+                <span class="fw-bold text-dark">Tomorrow, May 17</span>
+            </div>
+            
+            {% if product.stock > 0 %}
+            <div class="d-flex align-items-center gap-2 text-success fw-bold mb-4">
+                <span class="fs-4">●</span> In Stock ({{ product.stock }} units left)
+            </div>
+            {% else %}
+            <div class="d-flex align-items-center gap-2 text-danger fw-bold mb-4">
+                <span class="fs-4">●</span> Out of Stock
+            </div>
+            {% endif %}
+
+            <div class="mb-4">
+                <label class="x-small fw-bold text-uppercase text-secondary d-block mb-2">Select Quantity</label>
+                <div class="d-flex align-items-center border rounded-3 bg-white shadow-sm overflow-hidden w-100" style="height: 45px;">
+                    <button type="button" class="btn btn-link text-dark text-decoration-none px-3 py-0 border-0 fw-bold fs-4" onclick="this.parentNode.querySelector('input').stepDown()">-</button>
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control border-0 bg-transparent text-center fw-bold fs-5 shadow-none p-0" style="border-left: 1px solid #eee !important; border-right: 1px solid #eee !important;">
+                    <button type="button" class="btn btn-link text-dark text-decoration-none px-3 py-0 border-0 fw-bold fs-4" onclick="this.parentNode.querySelector('input').stepUp()">+</button>
                 </div>
-                <h1 class="display-5 fw-bold mb-3">{{ product.name }}</h1>
-                <h2 class="text-primary fw-bold mb-4">₹{{ product.price }}</h2>
-                
-                <p class="lead text-muted mb-4">{{ product.description }}</p>
-                
-                <div class="mb-5">
-                    <div class="d-flex align-items-center text-muted">
-                        <span class="me-2">📦</span> 
-                        <strong>{{ product.stock }}</strong> <span class="ms-1">items available in stock</span>
-                    </div>
+            </div>
+
+            <div class="d-grid gap-3 mb-4">
+                <a href="javascript:void(0)" onclick="location.href='{% url 'add_to_cart' product.id %}?quantity=' + document.getElementsByName('quantity')[0].value;" class="btn btn-primary btn-lg py-3 shadow-sm rounded-pill fw-800">Add to Cart</a>
+                <a href="javascript:void(0)" onclick="location.href='{% url 'buy_now' product.id %}?quantity=' + document.getElementsByName('quantity')[0].value;" class="btn btn-warning btn-lg py-3 shadow-sm rounded-pill fw-800" style="background: #ffa41c !important; border:none !important;">Buy Now</a>
+            </div>
+
+            <div class="x-small text-secondary">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Payment</span>
+                    <span class="text-info fw-bold">Secure transaction</span>
                 </div>
-                
-                <div class="d-grid mt-auto">
-                    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm">Add to Cart</a>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Ships from</span>
+                    <span class="text-dark fw-bold">AB Traders Official</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Returns</span>
+                    <span class="text-info fw-bold">10-Day Refund Policy</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .fw-800 { font-weight: 800; }
+    .x-small { font-size: 0.75rem; }
+    .ls-wide { letter-spacing: 0.05em; }
+    .breadcrumb-item + .breadcrumb-item::before { content: "›"; color: #ccc; }
+</style>
 {% endblock %}

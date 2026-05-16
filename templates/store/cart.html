@@ -1,118 +1,133 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h1 class="fw-bold">Shopping Cart</h1>
-    </div>
-</div>
-
-{% if cart_items %}
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow-sm border-0 rounded-4 mb-4">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light text-muted">
-                            <tr>
-                                <th class="ps-4">Product</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th class="pe-4">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in cart_items %}
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center gap-3 py-2">
-                                        {% if item.image_url %}
-                                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
-                                        {% endif %}
-                                        <div>
-                                            <span class="fw-semibold d-block">{{ item.name }}</span>
-                                            {% if item.discounted_price < item.original_price %}
-                                                <span class="badge bg-danger rounded-pill mt-1" style="font-size: 0.65rem;">Promo Applied</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if item.discounted_price < item.original_price %}
-                                        <del class="text-muted small d-block">₹{{ item.original_price|floatformat:2 }}</del>
-                                        <span class="text-danger fw-bold">₹{{ item.discounted_price|floatformat:2 }}</span>
-                                    {% else %}
-                                        ₹{{ item.original_price|floatformat:2 }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <a href="{% url 'update_cart' item.product_id 'decrease' %}" class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">-</a>
-                                        <span class="fw-semibold px-2">{{ item.quantity }}</span>
-                                        <a href="{% url 'update_cart' item.product_id 'increase' %}" class="btn btn-sm btn-light border rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">+</a>
-                                    </div>
-                                </td>
-                                <td class="fw-bold">₹{{ item.total|floatformat:2 }}</td>
-                                <td class="pe-4">
-                                    <a href="{% url 'remove_from_cart' item.product_id %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Remove</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<div class="row g-4 fade-in">
+    <!-- Shopping Cart List -->
+    <div class="col-lg-9">
+        <div class="bg-white p-4 shadow-sm border rounded-4">
+            <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-3">
+                <div>
+                    <h1 class="fs-2 fw-800 mb-0">Shopping Cart</h1>
+                    <a href="#" class="small text-info text-decoration-none">Deselect all items</a>
                 </div>
+                <div class="text-secondary small fw-bold">Price</div>
             </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body p-4">
-                <h4 class="fw-bold mb-4">Order Summary</h4>
-                
-                <form action="{% url 'apply_promo' %}" method="post" class="mb-4">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <input type="text" name="promo_code" class="form-control" placeholder="Promo code" value="{{ promo_code|default:'' }}">
-                        <button class="btn btn-outline-secondary" type="submit">Apply</button>
+
+            {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="row border-bottom pb-4 mb-4 g-3 align-items-center">
+                    <!-- Image -->
+                    <div class="col-md-2 text-center">
+                        {% if item.image_url %}
+                        <div class="p-2 border rounded-3 bg-light d-inline-block">
+                            <img src="{{ item.image_url }}" class="img-fluid" alt="{{ item.name }}" style="max-height: 100px; object-fit: contain;">
+                        </div>
+                        {% endif %}
                     </div>
-                    {% if promo %}
-                        <small class="text-success d-block mt-2">✓ Promo '{{ promo.code }}' applied (-{{ promo.discount_percentage }}%)</small>
-                    {% endif %}
-                </form>
+                    <!-- Details -->
+                    <div class="col-md-8">
+                        <h5 class="fw-bold mb-1 fs-6">{{ item.name }}</h5>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-success bg-opacity-10 text-success small">In Stock</span>
+                            <span class="text-secondary x-small">Eligible for FREE Shipping</span>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center border rounded-pill bg-white shadow-sm overflow-hidden" style="height: 32px;">
+                                <a href="{% url 'update_cart' item.product_id 'decrease' %}" class="btn btn-link text-dark text-decoration-none px-2 py-0 border-0 fw-bold fs-5 line-height-1">-</a>
+                                <input type="number" value="{{ item.quantity }}" class="form-control form-control-sm border-0 bg-transparent text-center fw-800 p-0 shadow-none" style="width: 40px; border-left: 1px solid #f1f5f9 !important; border-right: 1px solid #f1f5f9 !important; font-size: 0.85rem;" readonly>
+                                <a href="{% url 'update_cart' item.product_id 'increase' %}" class="btn btn-link text-dark text-decoration-none px-2 py-0 border-0 fw-bold fs-5 line-height-1">+</a>
+                            </div>
+                            <div class="vr text-secondary opacity-25" style="height: 15px;"></div>
+                            <a href="{% url 'remove_from_cart' item.product_id %}" class="small text-danger text-decoration-none fw-bold">Delete</a>
+                            <div class="vr text-secondary opacity-25" style="height: 15px;"></div>
+                            <a href="#" class="small text-info text-decoration-none fw-bold">Save for later</a>
+                        </div>
+                    </div>
+                    <!-- Price -->
+                    <div class="col-md-2 text-end">
+                        <span class="fw-800 fs-5">₹{{ item.total|floatformat:2 }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="d-flex justify-content-between align-items-center pt-3">
+                    <a href="{% url 'home' %}" class="text-info text-decoration-none small fw-bold">← Continue Shopping</a>
+                    <div class="text-end">
+                        <span class="fs-5 text-secondary">Subtotal ({{ cart_items|length }} items): </span>
+                        <span class="fs-4 fw-800 ms-2">₹{{ total_price|floatformat:2 }}</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="py-5 text-center">
+                    <div class="display-1 mb-4 opacity-25">🛒</div>
+                    <h2 class="fs-3 fw-800 mb-3">Your Cart is empty.</h2>
+                    <p class="text-secondary mb-4 mx-auto" style="max-width: 400px;">Your Shopping Cart lives to serve. Give it purpose — fill it with groceries, clothing, household supplies, electronics, and more.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary px-5 py-3 shadow-lg">Start Shopping Now</a>
+                </div>
+            {% endif %}
+        </div>
 
-                <div class="d-flex justify-content-between mb-2 fs-6">
-                    <span class="text-muted">Subtotal</span>
-                    <span class="fw-medium">₹{{ subtotal|floatformat:2 }}</span>
+        {% if cart_items %}
+        <!-- Recommendation Section (Modern UX) -->
+        <div class="mt-5">
+            <h5 class="fw-800 mb-4 px-1">Customers also bought</h5>
+            <div class="row row-cols-2 row-cols-md-4 g-3">
+                {% for p in products|slice:":4" %}
+                <div class="col">
+                    <div class="card h-100 p-2 shadow-none border-0 bg-white">
+                        <img src="{{ p.image_url }}" class="card-img-top mb-2 rounded-3" style="height: 120px; object-fit: contain;">
+                        <div class="card-body p-1">
+                            <h6 class="small fw-bold mb-1 text-truncate">{{ p.name }}</h6>
+                            <div class="text-danger small fw-800 mb-2">₹{{ p.price }}</div>
+                            <a href="{% url 'add_to_cart' p.id %}" class="btn btn-outline-primary btn-sm w-100 py-1 x-small">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Subtotal Checkout Box -->
+    <div class="col-lg-3">
+        <div class="sticky-top" style="top: 100px;">
+            <div class="bg-white p-4 shadow-sm border rounded-4 mb-4">
+                <div class="d-flex align-items-start gap-2 mb-4 p-2 bg-success bg-opacity-5 rounded-3">
+                    <span class="text-success fs-5">✓</span>
+                    <div class="x-small text-secondary">
+                        <span class="text-success fw-bold">Free Shipping</span> on this order. 
+                        Choose this option at checkout.
+                    </div>
                 </div>
                 
-                {% if total_discount > 0 %}
-                <div class="d-flex justify-content-between mb-3 fs-6 text-danger">
-                    <span>Discount</span>
-                    <span class="fw-bold">-₹{{ total_discount|floatformat:2 }}</span>
+                <div class="mb-4">
+                    <div class="text-secondary small mb-1">Total Amount:</div>
+                    <div class="fs-3 fw-800">₹{{ total_price|floatformat:2 }}</div>
+                    <div class="x-small text-secondary mt-1">Inclusive of all taxes</div>
                 </div>
-                {% endif %}
-
-                <hr>
-
-                <div class="d-flex justify-content-between mb-4 fs-5">
-                    <span class="text-muted fw-bold">Total</span>
-                    <span class="fw-bold text-primary">₹{{ total_price|floatformat:2 }}</span>
+                
+                <div class="form-check mb-4 small bg-light p-2 rounded-3 ms-0 ps-4">
+                    <input class="form-check-input ms-0" type="checkbox" id="giftCheck">
+                    <label class="form-check-label ms-2 fw-medium" for="giftCheck">
+                        This order contains a gift
+                    </label>
                 </div>
+
                 <div class="d-grid gap-2">
-                    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg rounded-pill">Proceed to Checkout</a>
-                    <a href="{% url 'home' %}" class="btn btn-light rounded-pill">Continue Shopping</a>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg py-3 shadow">Proceed to Buy</a>
                 </div>
             </div>
+
+
         </div>
     </div>
 </div>
-{% else %}
-<div class="text-center py-5 bg-white rounded-4 shadow-sm">
-    <div class="mb-4 text-muted" style="font-size: 4rem;">🛒</div>
-    <h2 class="text-muted mb-4">Your cart is empty</h2>
-    <a href="{% url 'home' %}" class="btn btn-primary btn-lg rounded-pill px-5">Start Shopping</a>
-</div>
-{% endif %}
+
+<style>
+    .fw-800 { font-weight: 800; }
+    .x-small { font-size: 0.75rem; }
+    .vr { width: 1px; }
+</style>
 {% endblock %}

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.gzip.GZipMiddleware',  # Added Gzip compression
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,10 +82,9 @@ fallback_url = f'mysql://avnadmin:{db_pwd}@mysql-b44d0e7-abt.i.aivencloud.com:22
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL', fallback_url),
-        conn_max_age=0
+        conn_max_age=600  # Persistent connections for 10 minutes
     )
 }
-
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -129,4 +129,4 @@ TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '7785896124')
 # Keep users always logged in
 SESSION_COOKIE_AGE = 315360000  # 10 years in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = False  # Changed to False for performance

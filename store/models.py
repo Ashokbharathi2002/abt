@@ -31,6 +31,8 @@ class Order(models.Model):
         ('Pending', 'Pending'),
         ('Shipped', 'Shipped'),
         ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
+        ('Returned', 'Returned'),
     )
     user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
