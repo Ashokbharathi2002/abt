@@ -10,6 +10,13 @@
         <div class="bg-white p-4 border rounded shadow-sm">
             <h1 class="fs-4 fw-normal mb-3">Sign in</h1>
             
+            {% if form.errors %}
+            <div class="alert alert-danger py-2 small mb-3 border-0 shadow-sm rounded-3">
+                <div class="fw-bold"><span class="fs-5 me-1">⚠️</span> There was a problem</div>
+                <div class="x-small">Invalid username or password. Please try again.</div>
+            </div>
+            {% endif %}
+            
             <form method="post" class="mb-4">
                 {% csrf_token %}
                 <div class="mb-3">
