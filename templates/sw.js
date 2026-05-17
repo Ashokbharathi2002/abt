@@ -8,12 +8,25 @@ const ASSETS = [
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
 ];
 
-// Install Event
+// Install Event (Robust, fail-safe caching)
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching files');
-      return cache.addAll(ASSETS);
+      console.log('[Service Worker] Caching files individually');
+      return Promise.allSettled(
+        ASSETS.map((asset) => {
+          return fetch(asset)
+            .then((response) => {
+              if (response.ok) {
+                return cache.put(asset, response);
+              }
+              throw new Error(`Failed to fetch ${asset} (Status: ${response.status})`);
+            })
+            .catch((err) => {
+              console.warn(`[Service Worker] Skipping cache for asset ${asset}:`, err);
+            });
+        })
+      );
     })
   );
 });
