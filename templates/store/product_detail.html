@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="mb-4">
-    <a href="{% url 'home' %}" class="btn btn-light rounded-pill px-4 py-2 small fw-bold shadow-sm">← Back to Store</a>
-</div>
 <div class="row g-5 bg-white p-5 shadow-sm border-0 rounded-4 fade-in">
+    <!-- Floating Back Button (Nested inside the row to inherit stacking context) -->
+    <div class="col-12 p-0 back-btn-wrapper">
+        <a href="{% url 'home' %}" class="btn btn-back-floating d-inline-flex align-items-center gap-2 rounded-pill px-4 py-2 small fw-bold text-decoration-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="back-arrow-icon"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Store
+        </a>
+    </div>
     <!-- Modern Image Showcase -->
     <div class="col-lg-5 text-center">
         <div class="position-sticky" style="top: 100px;">
@@ -29,6 +33,12 @@
 
     <!-- Info Column -->
     <div class="col-lg-4">
+        <div class="mb-3 d-flex align-items-center">
+            <a href="{% url 'home' %}" class="text-secondary text-decoration-none small fw-bold d-inline-flex align-items-center gap-1 hover-warning" style="transition: color 0.2s;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Store
+            </a>
+        </div>
         <div class="mb-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb x-small text-uppercase ls-wide">
@@ -92,15 +102,15 @@
             <div class="mb-4">
                 <label class="x-small fw-bold text-uppercase text-secondary d-block mb-2">Select Quantity</label>
                 <div class="d-flex align-items-center border rounded-3 bg-white shadow-sm overflow-hidden w-100" style="height: 45px;">
-                    <button type="button" class="btn btn-link text-dark text-decoration-none px-3 py-0 border-0 fw-bold fs-4" onclick="this.parentNode.querySelector('input').stepDown()">-</button>
-                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control border-0 bg-transparent text-center fw-bold fs-5 shadow-none p-0" style="border-left: 1px solid #eee !important; border-right: 1px solid #eee !important;">
-                    <button type="button" class="btn btn-link text-dark text-decoration-none px-3 py-0 border-0 fw-bold fs-4" onclick="this.parentNode.querySelector('input').stepUp()">+</button>
+                    <button type="button" class="btn btn-link text-dark text-decoration-none px-3 py-0 border-0 fw-bold fs-4" onclick="document.getElementById('quantity-input').stepDown()">-</button>
+                    <input type="number" id="quantity-input" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control border-0 bg-transparent text-center fw-bold fs-5 shadow-none p-0" style="border-left: 1px solid #eee !important; border-right: 1px solid #eee !important;">
+                    <button type="button" class="btn btn-link text-dark text-decoration-none px-3 py-0 border-0 fw-bold fs-4" onclick="document.getElementById('quantity-input').stepUp()">+</button>
                 </div>
             </div>
 
             <div class="d-grid gap-3 mb-4">
-                <a href="javascript:void(0)" onclick="location.href='{% url 'add_to_cart' product.id %}?quantity=' + document.getElementsByName('quantity')[0].value;" class="btn btn-primary btn-lg py-3 shadow-sm rounded-pill fw-800">Add to Cart</a>
-                <a href="javascript:void(0)" onclick="location.href='{% url 'buy_now' product.id %}?quantity=' + document.getElementsByName('quantity')[0].value;" class="btn btn-warning btn-lg py-3 shadow-sm rounded-pill fw-800" style="background: #ffa41c !important; border:none !important;">Buy Now</a>
+                <a href="javascript:void(0)" onclick="location.href='{% url 'add_to_cart' product.id %}?quantity=' + document.getElementById('quantity-input').value;" class="btn btn-primary btn-lg py-3 shadow-sm rounded-pill fw-800">Add to Cart</a>
+                <a href="javascript:void(0)" onclick="location.href='{% url 'buy_now' product.id %}?quantity=' + document.getElementById('quantity-input').value;" class="btn btn-warning btn-lg py-3 shadow-sm rounded-pill fw-800" style="background: #ffa41c !important; border:none !important;">Buy Now</a>
             </div>
 
             <div class="x-small text-secondary">

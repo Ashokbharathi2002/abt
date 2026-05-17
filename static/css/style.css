@@ -222,3 +222,78 @@ input[type=number] {
     transition: all 0.2s;
 }
 
+/* Custom Premium Floating Back Button */
+.back-btn-wrapper {
+    position: relative;
+    z-index: 99999 !important;
+}
+
+.btn-back-floating {
+    position: fixed;
+    top: 95px;
+    left: 24px;
+    z-index: 99999 !important;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: var(--text-main);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-back-floating:hover {
+    background: #ffffff;
+    border-color: var(--accent-color) !important;
+    color: var(--accent-color) !important;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.btn-back-floating:hover .back-arrow-icon {
+    transform: translateX(-3px);
+}
+
+.back-arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 1200px) {
+    .btn-back-floating {
+        position: relative;
+        top: auto;
+        left: auto;
+        display: inline-flex;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        background: #ffffff;
+        backdrop-filter: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+/* Premium PWA Install Banner Style */
+.pwa-banner {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1100;
+    max-width: 450px;
+    width: calc(100% - 48px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+@media (max-width: 576px) {
+    .pwa-banner {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+    }
+}
+
+.hover-warning:hover {
+    color: var(--accent-color) !important;
+}
+

@@ -7,7 +7,7 @@
         
         <div class="row g-3 mb-5">
             <!-- Orders Card -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <a href="#ordersSection" class="card h-100 p-3 text-decoration-none hover-light border rounded shadow-none">
                     <div class="d-flex gap-3 align-items-center">
                         <div class="fs-1">📦</div>
@@ -19,7 +19,7 @@
                 </a>
             </div>
             <!-- Login & Security -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <a href="#" class="card h-100 p-3 text-decoration-none hover-light border rounded shadow-none">
                     <div class="d-flex gap-3 align-items-center">
                         <div class="fs-1">🔐</div>
@@ -31,13 +31,25 @@
                 </a>
             </div>
             <!-- Your Addresses -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <a href="#" class="card h-100 p-3 text-decoration-none hover-light border rounded shadow-none">
                     <div class="d-flex gap-3 align-items-center">
                         <div class="fs-1">📍</div>
                         <div>
                             <h6 class="fw-bold mb-1 text-dark">Your Addresses</h6>
-                            <p class="x-small text-secondary mb-0">Edit addresses for orders and gifts</p>
+                            <p class="x-small text-secondary mb-0">Edit addresses for orders</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Phone Alerts Card -->
+            <div class="col-md-3">
+                <a href="{% url 'test_notification' %}" class="card h-100 p-3 text-decoration-none hover-light border border-warning rounded shadow-none bg-warning bg-opacity-10">
+                    <div class="d-flex gap-3 align-items-center">
+                        <div class="fs-1">🔔</div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark text-warning-emphasis">Phone Alerts</h6>
+                            <p class="x-small text-secondary mb-0">Test instant mobile notifications</p>
                         </div>
                     </div>
                 </a>
@@ -80,9 +92,9 @@
                                 </h6>
                                 <div class="d-flex gap-2">
                                     {% if order.status == 'Pending' %}
-                                    <button class="btn btn-outline-danger btn-sm x-small rounded-pill px-3 fw-bold">Cancel Order</button>
+                                    <a href="{% url 'cancel_order' order.id %}" class="btn btn-outline-danger btn-sm x-small rounded-pill px-3 fw-bold">Cancel Order</a>
                                     {% elif order.status == 'Delivered' %}
-                                    <button class="btn btn-outline-secondary btn-sm x-small rounded-pill px-3 fw-bold">Return Items</button>
+                                    <a href="{% url 'return_order' order.id %}" class="btn btn-outline-secondary btn-sm x-small rounded-pill px-3 fw-bold">Return Items</a>
                                     {% endif %}
                                 </div>
                             </div>

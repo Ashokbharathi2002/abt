@@ -242,6 +242,19 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            
+            # Send Telegram notification for registration
+            phone_number = "N/A"
+            if hasattr(user, 'profile'):
+                phone_number = user.profile.phone_number
+            
+            reg_msg = f"👤 <b>New User Registered!</b>\n"
+            reg_msg += f"👤 Username: {user.username}\n"
+            reg_msg += f"📛 Name: {user.first_name}\n"
+            reg_msg += f"📞 Phone: {phone_number}\n"
+            reg_msg += f"📧 Email: {user.email}\n"
+            send_telegram_message(reg_msg)
+            
             messages.success(request, "Registration successful.")
             return redirect('home')
     else:
@@ -256,6 +269,17 @@ def profile(request):
         form = ProfileUpdateForm(request.POST, user=request.user)
         if form.is_valid():
             form.save()
+            
+            # Send Telegram notification for profile update
+            profile_msg = f"👤 <b>Profile Updated!</b>\n"
+            profile_msg += f"👤 Username: {request.user.username}\n"
+            profile_msg += f"📛 Name: {request.user.first_name}\n"
+            if hasattr(request.user, 'profile'):
+                profile_msg += f"📞 Phone: {request.user.profile.phone_number}\n"
+                profile_msg += f"📍 Pincode: {request.user.profile.pincode}\n"
+                profile_msg += f"🏠 Address: {request.user.profile.address}\n"
+            send_telegram_message(profile_msg)
+            
             messages.success(request, "Your profile has been updated successfully.")
             return redirect('profile')
     else:
@@ -265,3 +289,61 @@ def profile(request):
         'form': form,
         'orders': orders
     })
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status == 'Pending':
+        order.status = 'Cancelled'
+        order.save()
+        
+        # Send Telegram notification for cancellation
+        phone_number = "N/A"
+        if hasattr(request.user, 'profile'):
+            phone_number = request.user.profile.phone_number
+            
+        cancel_msg = f"❌ <b>Order #{order.id} Cancelled!</b>\n"
+        cancel_msg += f"👤 Customer: {request.user.first_name or request.user.username}\n"
+        cancel_msg += f"📞 Phone: {phone_number}\n"
+        cancel_msg += f"💰 Total: ₹{order.total_price}\n"
+        send_telegram_message(cancel_msg)
+        
+        messages.success(request, f"Order #{order.id} has been cancelled successfully.")
+    else:
+        messages.error(request, "This order cannot be cancelled.")
+    return redirect('profile')
+
+@login_required
+def return_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status == 'Delivered':
+        order.status = 'Returned'
+        order.save()
+        
+        # Send Telegram notification for return
+        phone_number = "N/A"
+        if hasattr(request.user, 'profile'):
+            phone_number = request.user.profile.phone_number
+            
+        return_msg = f"🔄 <b>Order #{order.id} Return Requested!</b>\n"
+        return_msg += f"👤 Customer: {request.user.first_name or request.user.username}\n"
+        return_msg += f"📞 Phone: {phone_number}\n"
+        return_msg += f"💰 Total: ₹{order.total_price}\n"
+        send_telegram_message(return_msg)
+        
+        messages.success(request, f"Return request for Order #{order.id} has been processed.")
+    else:
+        messages.error(request, "This order cannot be returned.")
+    return redirect('profile')
+
+@login_required
+def test_notification(request):
+    test_msg = f"🔔 <b>Test Notification from AB Traders!</b>\n"
+    test_msg += f"Your phone notifications are working perfectly.\n"
+    test_msg += f"👤 Tested by: {request.user.username}"
+    success = send_telegram_message(test_msg)
+    if success:
+        messages.success(request, "Test notification sent to your phone via Telegram!")
+    else:
+        messages.error(request, "Failed to send notification. Please check Telegram configuration.")
+    return redirect('profile')
