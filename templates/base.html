@@ -84,7 +84,52 @@
             deferredPrompt = null;
             dismissPwaPrompt();
         }
+
+        function dismissIosPwaPrompt() {
+            const iosBanner = document.getElementById('pwaIosBanner');
+            if (iosBanner) iosBanner.style.display = 'none';
+            sessionStorage.setItem('pwaPromptDismissed', 'true');
+        }
+
+        // Detect iOS and display tailored PWA instructions if not already standalone
+        window.addEventListener('load', () => {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+            if (isIOS && !isStandalone) {
+                if (!sessionStorage.getItem('pwaPromptDismissed')) {
+                    const iosBanner = document.getElementById('pwaIosBanner');
+                    if (iosBanner) {
+                        iosBanner.style.display = 'block';
+                    }
+                }
+            }
+        });
     </script>
+
+    <!-- iOS PWA Install Instructions Banner -->
+    <div id="pwaIosBanner" class="pwa-banner border shadow-lg rounded-4 p-3 bg-white fade-in" style="display: none;">
+        <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="pwa-icon-container flex-shrink-0">
+                    <img src="{% static 'images/icons/icon-192x192.png' %}" alt="AB Traders Logo" style="width: 48px; height: 48px; object-fit: contain;" class="rounded-3 border">
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold text-dark mb-1">Install AB Traders App</h6>
+                    <p class="x-small text-secondary mb-0">Shop faster with our premium offline-enabled mobile app.</p>
+                </div>
+                <button type="button" class="btn-close ms-auto align-self-start" onclick="dismissIosPwaPrompt()"></button>
+            </div>
+            
+            <div class="border-top pt-2 mt-1">
+                <p class="small text-dark fw-bold mb-2">To install on your iPhone / iPad:</p>
+                <ol class="x-small text-secondary ps-3 mb-0">
+                    <li class="mb-1">Tap the Safari Share button <svg class="d-inline" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="width: 14px; height: 14px; margin-top: -3px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> at the bottom.</li>
+                    <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container-fluid px-lg-4">
